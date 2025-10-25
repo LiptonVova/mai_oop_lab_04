@@ -1,0 +1,84 @@
+#ifndef MAI_OOP_LAB_04_FIGURE_H
+#define MAI_OOP_LAB_04_FIGURE_H
+
+#include <iostream>
+#include <memory>
+#include <vector>
+
+template <class T>
+concept conceptPoint = std::is_arithmetic_v<T>;
+
+template <conceptPoint T>
+struct Point {
+    T x, y;
+
+};
+
+
+template <conceptPoint T>
+class Figure {
+    friend std::ostream& operator<<(std::ostream& os, const Figure<T>& figure) {
+        os << "-----------------------------------------------------------------------------------------------\n";
+        os << figure.define_figure_type() << ": \n";
+        for (int i = 0; i < figure.n; ++i) {
+            os << "    Point " << i + 1 << ": (x: " << figure.points[i]->x << ", y: " << figure.points[i]->y << ")\n";
+        }
+        os << "\n";
+        os << "    Area: " << static_cast<double>(figure) << "\n";
+        os << "    Point centre: " << "(x: " << figure.define_centre_figure()->x << ", y: " << figure.define_centre_figure()->y << ")\n";
+        os << "-----------------------------------------------------------------------------------------------\n";
+        return os;
+    }
+
+    friend std::istream& operator>>(std::istream& is, Figure<T>& figure) {
+        size_t count_vertexes = figure.define_count_vertexes();
+        for (int i = 0; i < count_vertexes; ++i) {
+            Point<T> point;
+            std::cout << "Enter a point in the format: x y: ";
+            is >> point.x >> point.y;
+            figure.points.push_back(std::make_unique<Point<T>>(point));
+        }
+        figure.n = count_vertexes;
+        return is;
+    }
+
+
+public:
+    std::shared_ptr<Point<double>> define_centre_figure() const {
+        std::shared_ptr<Point<double>> point_centre_figure = std::make_unique<Point<double>>();
+
+        for (int i = 0; i < this->n; ++i) {
+            point_centre_figure->x += this->points[i]->x;
+            point_centre_figure->y += this->points[i]->y;
+        }
+        point_centre_figure->x /= static_cast<double>(this->n);
+        point_centre_figure->y /= static_cast<double>(this->n);
+
+        return point_centre_figure;
+    }
+
+    explicit operator double() const {
+        double sum_1 = 0;
+        double sum_2 = 0;
+        int next_index = 0;
+        for (int i = 0; i < this->n; ++i) {
+            next_index = (i + 1) % this->n;
+            sum_1 += this->points[i]->x * this->points[next_index]->y;
+            sum_2 += this->points[next_index]->x * this->points[i]->y;
+        }
+        return std::abs(sum_1 - sum_2) / 2.0;
+    }
+
+    virtual std::string define_figure_type() const = 0;
+    virtual size_t define_count_vertexes() const = 0;
+    virtual ~Figure() = default;
+
+protected:
+    std::vector<std::unique_ptr<Point<T>>> points;
+    size_t n;
+};
+
+
+
+
+#endif //MAI_OOP_LAB_04_FIGURE_H
