@@ -64,13 +64,6 @@ class Figure {
     }
 
 public:
-    // Figure(const Figure& other) {
-    //     for (const auto& point_ptr : other.points) {
-    //         this->points.push_back(std::make_unique<Point<T>>(*point_ptr));
-    //     }
-    //     this->n = other.n;
-    // }
-
     std::shared_ptr<Point<double>> define_centre_figure() const {
         std::shared_ptr<Point<double>> point_centre_figure = std::make_unique<Point<double>>();
 
@@ -100,24 +93,6 @@ public:
     virtual size_t define_count_vertexes() const = 0;
 
 
-    // Figure& operator=(const Figure& right_operand) {
-    //     if (this != &right_operand) {
-    //         this->points.clear();
-    //         for (const auto &point_ptr : right_operand.points) {
-    //             this->points.push_back(std::make_unique<Point<T> >(*point_ptr));
-    //         }
-    //         this->n = right_operand.n;
-    //     }
-    //     return *this;
-    // }
-    //
-    // Figure& operator=(Figure&& right_operand) noexcept {
-    //     if (this != &right_operand) {
-    //         this->points = std::move(right_operand.points);
-    //         this->n = std::move(right_operand.n);
-    //     }
-    //     return *this;
-    // }
 
     virtual ~Figure() = default;
 
