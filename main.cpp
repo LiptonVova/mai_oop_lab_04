@@ -18,31 +18,57 @@ int main() {
     points.push_back(point_3);
     points.push_back(point_4);
 
-    // Rhombus<int> rhombus(points);
+    Rhombus<int> rhombus_1(points);
+
     Rhombus<int> rhombus;
     std::cin >> rhombus;
-    std::cout << rhombus;
+    // std::cout << rhombus;
 
+
+    std::cout << "Equal rhombus and rhombus_1? " << (rhombus_1 == rhombus ? "Equal" : "Not equal") << '\n';
 
     constexpr const Point<int> point_6(0, 2);
 
     points.push_back(point_6);
 
     Pentagon<int> pentagon(points);
-    std::cout << pentagon;
+    // std::cout << pentagon;
 
     constexpr const Point<int> point_7(5, 2);
     points.push_back(point_7);
 
     Hexagon<int> hexagon(points);
-    std::cout << hexagon;
+    // std::cout << hexagon;
 
-    Array<Figure<int>*> figures;
-    figures.add(&rhombus);
-    figures.add(&pentagon);
-    figures.add(&hexagon);
+    Array<std::shared_ptr<Figure<int>>> figures;
+
+    std::shared_ptr<Figure<int>> shared_ptr_rhombus_1 = std::make_shared<Rhombus<int>>(rhombus);
+    std::shared_ptr<Figure<int>> shared_ptr_pentagon_1 = std::make_shared<Pentagon<int>>(pentagon);
+    std::shared_ptr<Figure<int>> shared_ptr_hexagon_1 = std::make_shared<Hexagon<int>>(hexagon);
+
+    figures.add(shared_ptr_rhombus_1);
+    figures.add(shared_ptr_pentagon_1);
+    figures.add(shared_ptr_hexagon_1);
 
     figures.print_array();
+    std::cout << "Total area in array figures = " << figures.total_area() << '\n';
+
+
+    std::cout << "\n\n\n\n\n\n\n\n\n";
+
+    figures.pop(0);
+    figures.print_array();
+
+
+    std::cout << "\n\n\n\n\n\n\n\n\n";
+
+    Array<Rhombus<int>> array_rhombuss;
+    array_rhombuss.add(rhombus);
+
+    std::cout << "\n\n\n\n\n\n\n\n\n";
+    std::cout << "Figures rhombus:\n";
+    array_rhombuss.print_array();
+    std::cout << "Total area in array rhombus = " << array_rhombuss.total_area() << '\n';
 
 
     return 0;

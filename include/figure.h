@@ -12,6 +12,10 @@ template <conceptPoint T>
 struct Point {
     T x, y;
 
+
+    friend bool operator==(const Point& lhs, const Point& rhs) {
+        return lhs.x == rhs.x && lhs.y == rhs.y;
+    }
 };
 
 
@@ -42,8 +46,31 @@ class Figure {
         return is;
     }
 
+    friend bool operator==(const Figure<T> &lhs, const Figure<T> &rhs) {
+        if (lhs.define_figure_type() != rhs.define_figure_type()) {
+            return false;
+        }
+        if (lhs.n != rhs.n) {
+            return false;
+        }
+
+        for (size_t i = 0; i < lhs.n; i++) {
+            if (*lhs.points[i] != *rhs.points[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
 public:
+    // Figure(const Figure& other) {
+    //     for (const auto& point_ptr : other.points) {
+    //         this->points.push_back(std::make_unique<Point<T>>(*point_ptr));
+    //     }
+    //     this->n = other.n;
+    // }
+
     std::shared_ptr<Point<double>> define_centre_figure() const {
         std::shared_ptr<Point<double>> point_centre_figure = std::make_unique<Point<double>>();
 
@@ -71,6 +98,27 @@ public:
 
     virtual std::string define_figure_type() const = 0;
     virtual size_t define_count_vertexes() const = 0;
+
+
+    // Figure& operator=(const Figure& right_operand) {
+    //     if (this != &right_operand) {
+    //         this->points.clear();
+    //         for (const auto &point_ptr : right_operand.points) {
+    //             this->points.push_back(std::make_unique<Point<T> >(*point_ptr));
+    //         }
+    //         this->n = right_operand.n;
+    //     }
+    //     return *this;
+    // }
+    //
+    // Figure& operator=(Figure&& right_operand) noexcept {
+    //     if (this != &right_operand) {
+    //         this->points = std::move(right_operand.points);
+    //         this->n = std::move(right_operand.n);
+    //     }
+    //     return *this;
+    // }
+
     virtual ~Figure() = default;
 
 protected:

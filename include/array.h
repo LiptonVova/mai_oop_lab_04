@@ -8,19 +8,19 @@ template <class T>
 class Array {
 public:
     Array() : size(0), capacity(1) {
-        data = std::make_unique<std::shared_ptr<T>[]>(capacity);
+        data = std::make_unique<T[]>(capacity);
     }
 
     void add(T value) {
         if (this->size >= this->capacity) {
             this->resize();
         }
-        this->data[size++] = std::make_shared<T>(std::move(value));
+        this->data[this->size++] = std::move(value);
     }
 
     void resize() {
         this->capacity *= 2;
-        std::unique_ptr<std::shared_ptr<T>[]> temp = std::make_unique<std::shared_ptr<T>[]>(this->capacity);
+        std::unique_ptr<T[]> temp = std::make_unique<T[]>(this->capacity);
         for (size_t i = 0; i < this->size; ++i) {
             temp[i] = std::move(this->data[i]);
         }
@@ -28,16 +28,64 @@ public:
         this->data = std::move(temp);
     }
 
+    template<class U>
+    struct ArrayPrinter {
+        static void print(const U& ptr) {
+            std::cout << ptr;
+        }
+    };
+
+    template<class U>
+    struct ArrayPrinter<std::shared_ptr<U>> {
+        static void print(const std::shared_ptr<U>& ptr) {
+            std::cout << *ptr;
+        }
+    };
     void print_array() {
         for (size_t i = 0; i < this->size; ++i) {
-            std::cout << **(this->data[i]);
+            ArrayPrinter<T>::print(this->data[i]);
         }
     }
 
 
+    template<class U>
+    struct ArrayAreaCount {
+        static double area(const U& ptr) {
+            return static_cast<double>(ptr);
+        }
+    };
+
+    template<class U>
+    struct ArrayAreaCount<std::shared_ptr<U>> {
+        static double area(const std::shared_ptr<U>&ptr) {
+            return static_cast<double>(*ptr);
+        }
+    };
+
+    double total_area() {
+        double result = 0;
+        for (size_t i = 0; i < this->size; ++i) {
+            result += ArrayAreaCount<T>::area(this->data[i]);
+        }
+        return result;
+    }
+
+    void pop(int index) {
+        if (index < 0 || index >= this->size) {
+            return;
+        }
+
+        std::unique_ptr<T[]> temp = std::make_unique<T[]>(this->capacity);
+        for (size_t i = index; i < this->size - 1; ++i) {
+            temp[i] = std::move(this->data[i + 1]);
+        }
+
+        --this->size;
+        this->data = std::move(temp);
+    }
 
 private:
-    std::unique_ptr<std::shared_ptr<T>[]> data;
+    std::unique_ptr<T[]> data;
     size_t size;
     size_t capacity;
 };
