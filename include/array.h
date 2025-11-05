@@ -8,7 +8,7 @@ template <class T>
 class Array {
 public:
     Array() : size(0), capacity(1) {
-        data = std::make_unique<T[]>(capacity);
+        data = std::make_shared<T[]>(capacity);
     }
 
     void add(T value) {
@@ -20,7 +20,7 @@ public:
 
     void resize() {
         this->capacity *= 2;
-        std::unique_ptr<T[]> temp = std::make_unique<T[]>(this->capacity);
+        std::shared_ptr<T[]> temp = std::make_shared<T[]>(this->capacity);
         for (size_t i = 0; i < this->size; ++i) {
             temp[i] = std::move(this->data[i]);
         }
@@ -75,17 +75,15 @@ public:
             return;
         }
 
-        std::unique_ptr<T[]> temp = std::make_unique<T[]>(this->capacity);
         for (size_t i = index; i < this->size - 1; ++i) {
-            temp[i] = std::move(this->data[i + 1]);
+            this->data[i] = std::move(this->data[i + 1]);
         }
 
         --this->size;
-        this->data = std::move(temp);
     }
 
 private:
-    std::unique_ptr<T[]> data;
+    std::shared_ptr<T[]> data;
     size_t size;
     size_t capacity;
 };
